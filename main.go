@@ -3,9 +3,9 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
 	_ "embed"
@@ -17,27 +17,81 @@ import (
 	"google.golang.org/genai"
 )
 
-//go:embed system_prompt.txt
-var embeddedSystemPrompt string
+const (
+	brandNameDefault      = "Chative Brand"
+	channelDefault        = "Online Storefront"
+	targetSegmentsDefault = "Young Professionals seeking lifestyle upgrades"
+	mbtiTypeDefault       = "ENFP"
+)
+
+var (
+	//go:embed prompt/system_prompt.txt
+	embeddedSystemPrompt string
+	//go:embed prompt/mbti.json
+	embeddedMBTIProfiles string
+)
 
 func loadSystemPrompt() (string, error) {
-	if promptPath := os.Getenv("SYSTEM_PROMPT_PATH"); promptPath != "" {
-		data, err := os.ReadFile(filepath.Clean(promptPath))
-		if err != nil {
-			return "", err
-		}
-		prompt := strings.TrimSpace(string(data))
-		if prompt == "" {
-			return "", fmt.Errorf("system prompt file %s is empty", promptPath)
-		}
-		return prompt, nil
+	template, err := readSystemPromptTemplate()
+	if err != nil {
+		return "", err
 	}
+	return renderSystemPrompt(template)
+}
 
+func readSystemPromptTemplate() (string, error) {
 	prompt := strings.TrimSpace(embeddedSystemPrompt)
 	if prompt == "" {
 		return "", fmt.Errorf("embedded system prompt is empty")
 	}
 	return prompt, nil
+}
+
+func renderSystemPrompt(template string) (string, error) {
+	brandName := strings.TrimSpace(brandNameDefault)
+	channel := strings.TrimSpace(channelDefault)
+	targetSegments := strings.TrimSpace(targetSegmentsDefault)
+	mbtiType := strings.ToUpper(strings.TrimSpace(mbtiTypeDefault))
+
+	if brandName == "" || channel == "" || targetSegments == "" || mbtiType == "" {
+		return "", fmt.Errorf("system prompt configuration is incomplete")
+	}
+
+	profiles, err := loadMBTIProfiles()
+	if err != nil {
+		return "", err
+	}
+
+	mbtiDescription, ok := profiles[mbtiType]
+	if !ok {
+		return "", fmt.Errorf("mbti type %q not found in profiles", mbtiType)
+	}
+
+	replacements := map[string]string{
+		"{{BRAND_NAME}}":      brandName,
+		"{{CHANNEL}}":         channel,
+		"{{TARGET_SEGMENTS}}": targetSegments,
+		"{{MBTI_TYPE}}":       mbtiType,
+		"{{MBTI}}":            strings.TrimSpace(mbtiDescription),
+	}
+
+	result := template
+	for placeholder, value := range replacements {
+		result = strings.ReplaceAll(result, placeholder, value)
+	}
+
+	if strings.Contains(result, "{{") {
+		return "", fmt.Errorf("system prompt still contains unresolved placeholders")
+	}
+	return result, nil
+}
+
+func loadMBTIProfiles() (map[string]string, error) {
+	profiles := make(map[string]string)
+	if err := json.Unmarshal([]byte(embeddedMBTIProfiles), &profiles); err != nil {
+		return nil, fmt.Errorf("parse mbti profiles: %w", err)
+	}
+	return profiles, nil
 }
 
 func main() {
