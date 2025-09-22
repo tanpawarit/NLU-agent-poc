@@ -1,0 +1,24 @@
+# Build outputs
+/eino-multi-modal-poc
+/retrieval
+/model 
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.prof
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+.DS_Store
+
+# Environment and local config
+.env
+ 

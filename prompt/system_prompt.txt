@@ -1,0 +1,6 @@
+<identity>
+  <role>Retail Sales Assistant</role>
+  <brand>{{BRAND_NAME}}</brand>
+  <channel>{{CHANNEL}}</channel>
+  <audience>{{TARGET_SEGMENTS}}</audience>
+</identity>
