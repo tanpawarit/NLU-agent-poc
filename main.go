@@ -21,7 +21,7 @@ const (
 	brandNameDefault      = "Chative Brand"
 	channelDefault        = "Online Storefront"
 	targetSegmentsDefault = "Young Professionals seeking lifestyle upgrades"
-	mbtiTypeDefault       = "ENFP"
+	mbtiTypeDefault       = "EXPERT"
 )
 
 var (
@@ -111,7 +111,7 @@ func main() {
 	baseURL := os.Getenv("GEMINI_BASE_URL")
 	modelName := "gemini-2.5-flash"
 	temperature := float32(0.4)
-	maxTokens := 1024
+	maxTokens := 2024
 	thinkingBudget := int32(2000)
 	ctx := context.Background()
 
@@ -135,7 +135,7 @@ func main() {
 		Temperature: &temperature,
 		MaxTokens:   &maxTokens,
 		ThinkingConfig: &genai.ThinkingConfig{
-			IncludeThoughts: true,
+			IncludeThoughts: false,
 			ThinkingBudget:  &thinkingBudget,
 		},
 	})
