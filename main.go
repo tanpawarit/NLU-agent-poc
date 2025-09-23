@@ -198,5 +198,12 @@ func main() {
 
 		history = append(history, out)
 		fmt.Println("Bot:", strings.TrimSpace(out.Content))
+
+		if meta := out.ResponseMeta; meta != nil && meta.Usage != nil {
+			usage := meta.Usage
+			cachedTokens := usage.PromptTokenDetails.CachedTokens
+			fmt.Printf("Tokens — prompt: %d (cached: %d), completion: %d, total: %d\n",
+				usage.PromptTokens, cachedTokens, usage.CompletionTokens, usage.TotalTokens)
+		}
 	}
 }
