@@ -8,12 +8,11 @@ import (
 	"os"
 	"strings"
 
-	_ "embed"
-
 	"github.com/cloudwego/eino-ext/components/model/gemini"
 	"github.com/cloudwego/eino/compose"
 	"github.com/cloudwego/eino/schema"
 	"github.com/joho/godotenv"
+	"github.com/pawarison/eino-multi-modal-poc/prompt"
 	"google.golang.org/genai"
 )
 
@@ -22,13 +21,6 @@ const (
 	channelDefault        = "Online Storefront"
 	targetSegmentsDefault = "Young Professionals seeking lifestyle upgrades"
 	mbtiTypeDefault       = "EXPERT"
-)
-
-var (
-	//go:embed prompt/system_prompt.txt
-	embeddedSystemPrompt string
-	//go:embed prompt/mbti.json
-	embeddedMBTIProfiles string
 )
 
 func loadSystemPrompt() (string, error) {
@@ -40,11 +32,11 @@ func loadSystemPrompt() (string, error) {
 }
 
 func readSystemPromptTemplate() (string, error) {
-	prompt := strings.TrimSpace(embeddedSystemPrompt)
-	if prompt == "" {
+	template := strings.TrimSpace(prompt.SystemPromptTemplate)
+	if template == "" {
 		return "", fmt.Errorf("embedded system prompt is empty")
 	}
-	return prompt, nil
+	return template, nil
 }
 
 func renderSystemPrompt(template string) (string, error) {
@@ -88,7 +80,7 @@ func renderSystemPrompt(template string) (string, error) {
 
 func loadMBTIProfiles() (map[string]string, error) {
 	profiles := make(map[string]string)
-	if err := json.Unmarshal([]byte(embeddedMBTIProfiles), &profiles); err != nil {
+	if err := json.Unmarshal([]byte(prompt.MBTIProfilesJSON), &profiles); err != nil {
 		return nil, fmt.Errorf("parse mbti profiles: %w", err)
 	}
 	return profiles, nil
