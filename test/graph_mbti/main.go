@@ -12,7 +12,7 @@ import (
 	"github.com/cloudwego/eino/compose"
 	"github.com/cloudwego/eino/schema"
 	"github.com/joho/godotenv"
-	"github.com/pawarison/eino-multi-modal-poc/prompt"
+	mbtiprompt "github.com/pawarison/eino-multi-modal-poc/prompt/mbti"
 	"google.golang.org/genai"
 )
 
@@ -22,22 +22,6 @@ const (
 	targetSegmentsDefault = "Young Professionals seeking lifestyle upgrades"
 	mbtiTypeDefault       = "EXPERT"
 )
-
-func loadSystemPrompt() (string, error) {
-	template, err := readSystemPromptTemplate()
-	if err != nil {
-		return "", err
-	}
-	return renderSystemPrompt(template)
-}
-
-func readSystemPromptTemplate() (string, error) {
-	template := strings.TrimSpace(prompt.SystemPromptTemplate)
-	if template == "" {
-		return "", fmt.Errorf("embedded system prompt is empty")
-	}
-	return template, nil
-}
 
 func renderSystemPrompt(template string) (string, error) {
 	brandName := strings.TrimSpace(brandNameDefault)
@@ -80,7 +64,7 @@ func renderSystemPrompt(template string) (string, error) {
 
 func loadMBTIProfiles() (map[string]string, error) {
 	profiles := make(map[string]string)
-	if err := json.Unmarshal([]byte(prompt.MBTIProfilesJSON), &profiles); err != nil {
+	if err := json.Unmarshal([]byte(mbtiprompt.MBTIProfilesJSON), &profiles); err != nil {
 		return nil, fmt.Errorf("parse mbti profiles: %w", err)
 	}
 	return profiles, nil
@@ -89,7 +73,8 @@ func loadMBTIProfiles() (map[string]string, error) {
 func main() {
 	_ = godotenv.Load()
 
-	systemPrompt, err := loadSystemPrompt()
+	template := strings.TrimSpace(mbtiprompt.SystemPromptTemplate)
+	systemPrompt, err := renderSystemPrompt(template)
 	if err != nil {
 		fmt.Println("failed to load system prompt:", err)
 		return

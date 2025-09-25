@@ -1,0 +1,9 @@
+User → DetectIntent(LLM#1) → MergeState
+      → NeedEntities?
+          ├─ no → go to React Flow
+          └─ yes → Extract(LLM#2)
+                    → Validate/Normalize (deterministic)
+                    → Missing = Required - Entities
+                    → NeedMore?
+                         ├─ yes → AskGenerator (template หรือ LLM เล็ก) → Return
+                         └─ no  → go to React Flow 
