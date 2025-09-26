@@ -7,8 +7,10 @@ require (
 	github.com/cloudwego/eino-ext/components/embedding/gemini v0.0.0-20250919093114-b7a34962a8d8
 	github.com/cloudwego/eino-ext/components/model/gemini v0.1.7
 	github.com/joho/godotenv v1.5.1
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/milvus-io/milvus/client/v2 v2.6.0
 	google.golang.org/genai v1.25.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -147,7 +149,6 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/apimachinery v0.28.6 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
